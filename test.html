@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yt-dlp API Test Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-right: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background-color: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+        }
+        .error {
+            background-color: #fed7d7;
+            border: 1px solid #fc8181;
+            color: #742a2a;
+        }
+        .loading {
+            background-color: #ebf8ff;
+            border: 1px solid #90cdf4;
+            color: #2a69ac;
+        }
+        .endpoint-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background-color: #f7fafc;
+        }
+        .endpoint-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 yt-dlp API Test Page</h1>
+        
+        <div class="form-group">
+            <label for="apiKey">API Key:</label>
+            <input type="text" id="apiKey" value="sk-yt-dlp-2024-secure-api-key-f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5" placeholder="Enter your API key">
+        </div>
+
+        <div class="form-group">
+            <label for="baseUrl">Base URL:</label>
+            <input type="text" id="baseUrl" value="http://localhost:3000" placeholder="http://localhost:3000">
+        </div>
+
+        <!-- System Health Check -->
+        <div class="endpoint-section">
+            <div class="endpoint-title">🔍 System Health Check</div>
+            <button onclick="testHealth()">Test /health</button>
+            <button onclick="testStats()">Test /stats</button>
+            <div id="healthResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Video Info Test -->
+        <div class="endpoint-section">
+            <div class="endpoint-title">📹 Video Information</div>
+            <div class="form-group">
+                <label for="videoUrl">Video URL:</label>
+                <input type="url" id="videoUrl" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ" placeholder="Enter YouTube URL">
+            </div>
+            <button onclick="testVideoInfo()">Get Video Info</button>
+            <div id="videoInfoResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Download Links Test -->
+        <div class="endpoint-section">
+            <div class="endpoint-title">⬇️ Download Links</div>
+            <div class="form-group">
+                <label for="downloadUrl">Video URL:</label>
+                <input type="url" id="downloadUrl" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ" placeholder="Enter YouTube URL">
+            </div>
+            <button onclick="testDownloadLinks()">Get Download Links</button>
+            <div id="downloadResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        function getApiKey() {
+            return document.getElementById('apiKey').value;
+        }
+
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value;
+        }
+
+        function showResult(elementId, content, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${type}`;
+            element.textContent = content;
+        }
+
+        function showLoading(elementId) {
+            showResult(elementId, 'Loading...', 'loading');
+        }
+
+        async function makeRequest(endpoint, options = {}) {
+            const baseUrl = getBaseUrl();
+            const apiKey = getApiKey();
+            
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': apiKey
+                }
+            };
+
+            const finalOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+
+            const response = await fetch(`${baseUrl}${endpoint}`, finalOptions);
+            const data = await response.json();
+            
+            return {
+                status: response.status,
+                ok: response.ok,
+                data: data
+            };
+        }
+
+        async function testHealth() {
+            showLoading('healthResult');
+            try {
+                const result = await makeRequest('/health');
+                const content = `Status: ${result.status}\n${JSON.stringify(result.data, null, 2)}`;
+                showResult('healthResult', content, result.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('healthResult', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testStats() {
+            showLoading('healthResult');
+            try {
+                const result = await makeRequest('/stats');
+                const content = `Status: ${result.status}\n${JSON.stringify(result.data, null, 2)}`;
+                showResult('healthResult', content, result.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('healthResult', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testVideoInfo() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            if (!videoUrl) {
+                showResult('videoInfoResult', 'Please enter a video URL', 'error');
+                return;
+            }
+
+            showLoading('videoInfoResult');
+            try {
+                const result = await makeRequest('/video-info', {
+                    method: 'POST',
+                    body: JSON.stringify({ url: videoUrl })
+                });
+                const content = `Status: ${result.status}\n${JSON.stringify(result.data, null, 2)}`;
+                showResult('videoInfoResult', content, result.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('videoInfoResult', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDownloadLinks() {
+            const downloadUrl = document.getElementById('downloadUrl').value;
+            if (!downloadUrl) {
+                showResult('downloadResult', 'Please enter a video URL', 'error');
+                return;
+            }
+
+            showLoading('downloadResult');
+            try {
+                const result = await makeRequest('/download-links', {
+                    method: 'POST',
+                    body: JSON.stringify({ url: downloadUrl })
+                });
+                const content = `Status: ${result.status}\n${JSON.stringify(result.data, null, 2)}`;
+                showResult('downloadResult', content, result.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('downloadResult', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Test API key authentication on page load
+        window.onload = function() {
+            console.log('yt-dlp API Test Page loaded');
+            console.log('API Key configured:', getApiKey());
+            console.log('Base URL:', getBaseUrl());
+        };
+    </script>
+</body>
+</html>
