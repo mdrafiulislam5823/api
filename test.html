@@ -231,7 +231,7 @@
 
             showLoading('videoInfoResult');
             try {
-                const result = await makeRequest('/video-info', {
+                const result = await makeRequest('/api/video-info', {
                     method: 'POST',
                     body: JSON.stringify({ url: videoUrl })
                 });
@@ -251,7 +251,7 @@
 
             showLoading('downloadResult');
             try {
-                const result = await makeRequest('/download-links', {
+                const result = await makeRequest('/api/download-links', {
                     method: 'POST',
                     body: JSON.stringify({ url: downloadUrl })
                 });

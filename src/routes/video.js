@@ -12,7 +12,8 @@ const logger = createModuleLogger('video-routes');
  * @desc Extract video metadata from URL
  * @access Private (API Key required)
  */
-router.post('/video-info', authenticateApiKey, validateVideoUrlOnly, async (req, res) => {
+router.post('/api/video-info', authenticateApiKey, validateVideoUrlOnly, async (req, res) => {
+
   const startTime = Date.now();
   const { url } = req.body;
   const requestId = req.requestId;
@@ -110,7 +111,7 @@ router.post('/video-info', authenticateApiKey, validateVideoUrlOnly, async (req,
  * @desc Get direct download URLs for different video qualities
  * @access Private (API Key required)
  */
-router.post('/download-links', authenticateApiKey, validateVideoUrlOnly, async (req, res) => {
+router.post('/api/download-links', authenticateApiKey, validateVideoUrlOnly, async (req, res) => {
   const startTime = Date.now();
   const { url } = req.body;
   const requestId = req.requestId;
@@ -253,7 +254,7 @@ router.post('/download-links', authenticateApiKey, validateVideoUrlOnly, async (
  * @desc Get basic video info quickly (lighter version)
  * @access Private (API Key required)
  */
-router.post('/quick-info', authenticateApiKey, validateVideoUrlOnly, async (req, res) => {
+router.post('/api/quick-info', authenticateApiKey, validateVideoUrlOnly, async (req, res) => {
   const startTime = Date.now();
   const { url } = req.body;
   const requestId = req.requestId;
