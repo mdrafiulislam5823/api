@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: yt-dlp-microservice
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_KEY
+        generateValue: true
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+    disk:
+      name: data
+      mountPath: /tmp
+      sizeGB: 1

@@ -24,58 +24,54 @@ A production-ready Node.js microservice for video processing using yt-dlp. This 
 - Facebook (facebook.com)
 - And many more supported by yt-dlp
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
+- Node.js 18+ installed
+- Python 3.8+ installed
+- yt-dlp installed (`pip install yt-dlp`)
 
-- Node.js 18+ 
-- yt-dlp installed on your system
-- FFmpeg (recommended for better format support)
+### Installation
 
-### Local Development
-
-1. **Clone and install dependencies:**
 ```bash
+# Clone the repository
 git clone <repository-url>
 cd yt-dlp-microservice
+
+# Install dependencies
 npm install
-```
 
-2. **Set up environment variables:**
-```bash
+# Copy environment file
 cp .env.example .env
-# Edit .env with your configuration
+
+# Edit .env file with your configuration
+# Set your API_KEY to a secure random string
+
+# Start the server
+npm start
 ```
 
-3. **Install yt-dlp:**
-```bash
-# On macOS/Linux
-pip3 install yt-dlp
+The server will start on `http://localhost:10000`
 
-# On Windows
-pip install yt-dlp
-```
+## 🌐 Deployment
 
-4. **Start the development server:**
-```bash
-npm run dev
-```
+### Render Deployment
 
-The service will be available at `http://localhost:3000`
+This project is optimized for deployment on Render. See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) for detailed deployment instructions.
+
+**Quick Deploy to Render:**
+1. Push your code to GitHub/GitLab
+2. Connect to Render using the included `render.yaml`
+3. Render will automatically deploy with the correct configuration
 
 ### Docker Deployment
 
-1. **Build the Docker image:**
 ```bash
+# Build the image
 docker build -t yt-dlp-microservice .
-```
 
-2. **Run the container:**
-```bash
-docker run -p 3000:3000 \
-  -e API_KEY=your-secret-api-key \
-  -e PORT=3000 \
-  yt-dlp-microservice
+# Run the container
+docker run -p 10000:10000 -e PORT=10000 -e API_KEY=your-secret-key yt-dlp-microservice
 ```
 
 ### Railway Deployment
@@ -234,7 +230,7 @@ All errors follow this format:
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
-| `PORT` | Server port | `3000` | No |
+| `PORT` | Server port | `10000` | No |
 | `API_KEY` | Authentication key | `your-secret-api-key` | Yes |
 | `NODE_ENV` | Environment | `development` | No |
 | `LOG_LEVEL` | Logging level | `info` | No |

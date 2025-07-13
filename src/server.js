@@ -11,7 +11,7 @@ const systemRoutes = require('./routes/system');
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 // Rate limiting disabled for high-volume API usage
 // const limiter = rateLimit({
