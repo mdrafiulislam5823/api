@@ -1,4 +1,4 @@
-# Use Node.js 18 Alpine as base image for smaller size
+# Use Node.js 18 Alpine as base image
 FROM node:18-alpine
 
 # Set working directory
@@ -12,8 +12,8 @@ RUN apk update && apk add --no-cache \
     curl \
     && rm -rf /var/cache/apk/*
 
-# Install yt-dlp
-RUN pip3 install --no-cache-dir yt-dlp
+# Install yt-dlp with --break-system-packages to avoid virtual environment issues
+RUN pip3 install --no-cache-dir --break-system-packages yt-dlp
 
 # Create logs directory
 RUN mkdir -p logs
