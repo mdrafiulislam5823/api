@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader - Test Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1rem;
+        }
+
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus, input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid #e2e8f0;
+        }
+
+        .result.success {
+            background-color: #f0fff4;
+            border-color: #9ae6b4;
+            color: #22543d;
+        }
+
+        .result.error {
+            background-color: #fed7d7;
+            border-color: #fc8181;
+            color: #742a2a;
+        }
+
+        .result.loading {
+            background-color: #ebf8ff;
+            border-color: #90cdf4;
+            color: #2a69ac;
+        }
+
+        .video-info {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .download-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .download-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .download-card h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .download-card p {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background-color: #48bb78;
+        }
+
+        .status-offline {
+            background-color: #f56565;
+        }
+
+        .troubleshooting {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .troubleshooting h4 {
+            color: #c53030;
+            margin-bottom: 15px;
+        }
+
+        .troubleshooting ul {
+            color: #742a2a;
+            margin-left: 20px;
+        }
+
+        .troubleshooting li {
+            margin-bottom: 8px;
+        }
+
+        .environment-info {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #22543d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 YouTube Video Downloader</h1>
+            <p>Download videos, audio, and thumbnails from YouTube with ease</p>
+            <div style="margin-top: 15px;">
+                <span class="status-indicator status-offline" id="serverStatus"></span>
+                <span id="serverStatusText">Checking server status...</span>
+            </div>
+        </div>
+
+        <!-- API Configuration -->
+        <div class="form-section">
+            <h3 style="margin-bottom: 20px; color: #2d3748;">⚙️ API Configuration</h3>
+            <div class="form-group">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" value="sk-yt-dlp-2024-secure-api-key-f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5" placeholder="Enter your API key">
+            </div>
+            <div class="form-group">
+                <label for="apiUrl">API Base URL:</label>
+                <input type="text" id="apiUrl" value="https://mainapi-qbiw.onrender.com" placeholder="API Base URL">
+            </div>
+            <div class="form-group">
+                <label for="environment">Environment:</label>
+                <select id="environment" onchange="switchEnvironment()" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                    <option value="production">Production (Render)</option>
+                    <option value="local">Local Development</option>
+                </select>
+            </div>
+            <button class="btn btn-info" onclick="checkServerStatus()">🔍 Check Server Status</button>
+        </div>
+
+        <!-- Video URL Input -->
+        <div class="form-section">
+            <h3 style="margin-bottom: 20px; color: #2d3748;">📹 Video Information</h3>
+            <div class="form-group">
+                <label for="videoUrl">YouTube Video URL:</label>
+                <input type="url" id="videoUrl" value="https://www.youtube.com/watch?v=jNQXAC9IVRw" placeholder="Enter YouTube video URL (e.g., https://www.youtube.com/watch?v=...)">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="getVideoInfo()">📊 Get Video Info</button>
+                <button class="btn btn-success" onclick="downloadVideo()">🎬 Download Video</button>
+                <button class="btn btn-warning" onclick="downloadAudio()">🎵 Download Audio</button>
+                <button class="btn btn-info" onclick="downloadThumbnail()">🖼️ Download Thumbnail</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="result-section">
+            <div id="videoInfoResult" class="result hidden"></div>
+            <div id="videoInfoDisplay" class="video-info hidden"></div>
+            <div id="downloadResult" class="result hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentVideoInfo = null;
+
+        function getApiKey() {
+            return document.getElementById('apiKey').value;
+        }
+
+        function getBaseUrl() {
+            return document.getElementById('apiUrl').value;
+        }
+
+        function showResult(elementId, content, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = content;
+            element.classList.remove('hidden');
+        }
+
+        function hideResult(elementId) {
+            document.getElementById(elementId).classList.add('hidden');
+        }
+
+        function showLoading(elementId, message = 'Loading...') {
+            showResult(elementId, message, 'loading');
+        }
+
+        async function makeRequest(endpoint, options = {}) {
+            const baseUrl = getBaseUrl();
+            const apiKey = getApiKey();
+            
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': apiKey
+                }
+            };
+
+            const finalOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+
+            const response = await fetch(`${baseUrl}${endpoint}`, finalOptions);
+            const data = await response.json();
+            
+            return {
+                status: response.status,
+                ok: response.ok,
+                data: data
+            };
+        }
+
+        async function checkServerStatus() {
+            const statusIndicator = document.getElementById('serverStatus');
+            const statusText = document.getElementById('serverStatusText');
+            
+            statusText.textContent = 'Checking...';
+            statusIndicator.className = 'status-indicator';
+            
+            try {
+                const result = await makeRequest('/health');
+                if (result.ok) {
+                    statusIndicator.className = 'status-indicator status-online';
+                    statusText.textContent = 'Server Online ✅';
+                } else {
+                    statusIndicator.className = 'status-indicator status-offline';
+                    statusText.textContent = 'Server Error ❌';
+                }
+            } catch (error) {
+                statusIndicator.className = 'status-indicator status-offline';
+                statusText.textContent = 'Server Offline ❌';
+            }
+        }
+
+        async function getVideoInfo() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            if (!videoUrl) {
+                showResult('videoInfoResult', 'Please enter a video URL', 'error');
+                return;
+            }
+
+            hideResult('videoInfoDisplay');
+            showLoading('videoInfoResult', 'Fetching video information...');
+            
+            try {
+                const result = await makeRequest('/api/video-info', {
+                    method: 'POST',
+                    body: JSON.stringify({ url: videoUrl })
+                });
+                
+                if (result.ok && result.data.success) {
+                    currentVideoInfo = result.data.data;
+                    displayVideoInfo(currentVideoInfo);
+                    showResult('videoInfoResult', `✅ Video information loaded successfully!\nTitle: ${currentVideoInfo.title}\nDuration: ${currentVideoInfo.duration}\nViews: ${currentVideoInfo.view_count}`, 'success');
+                } else {
+                    let errorMessage = `❌ Error: ${result.data.error || 'Failed to get video info'}`;
+                    if (result.data.code) {
+                        errorMessage += `\nError Code: ${result.data.code}`;
+                    }
+                    
+                    // Add troubleshooting info for common production issues
+                    if (result.data.code === 'VIDEO_UNAVAILABLE' && getBaseUrl().includes('render.com')) {
+                        errorMessage += '\n\n🔧 Production Environment Issues:';
+                        errorMessage += '\n• Try a different public YouTube video';
+                        errorMessage += '\n• Some videos may be geo-restricted on cloud servers';
+                        errorMessage += '\n• Age-restricted videos often fail in production';
+                        errorMessage += '\n• Private/unlisted videos are not accessible';
+                    }
+                    
+                    showResult('videoInfoResult', errorMessage, 'error');
+                    
+                    // Show troubleshooting section for production errors
+                    if (getBaseUrl().includes('render.com') && result.data.code === 'VIDEO_UNAVAILABLE') {
+                        showTroubleshootingInfo();
+                    }
+                }
+            } catch (error) {
+                showResult('videoInfoResult', `❌ Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        function displayVideoInfo(info) {
+            const display = document.getElementById('videoInfoDisplay');
+            display.innerHTML = `
+                <h3 style="color: #2d3748; margin-bottom: 15px;">📹 Video Details</h3>
+                ${info.thumbnail ? `<img src="${info.thumbnail}" alt="Video Thumbnail" class="video-thumbnail">` : ''}
+                <h4 style="color: #4a5568; margin-bottom: 10px;">${info.title || 'Unknown Title'}</h4>
+                <p><strong>Duration:</strong> ${info.duration || 'Unknown'}</p>
+                <p><strong>Views:</strong> ${info.view_count || 'Unknown'}</p>
+                <p><strong>Uploader:</strong> ${info.uploader || 'Unknown'}</p>
+                <p><strong>Upload Date:</strong> ${info.upload_date || 'Unknown'}</p>
+                <div class="download-options">
+                    <div class="download-card">
+                        <h4>🎬 Video Download</h4>
+                        <p>Download the complete video with audio</p>
+                        <button class="btn btn-success" onclick="downloadVideo()">Download Video</button>
+                    </div>
+                    <div class="download-card">
+                        <h4>🎵 Audio Only</h4>
+                        <p>Extract and download audio track only</p>
+                        <button class="btn btn-warning" onclick="downloadAudio()">Download Audio</button>
+                    </div>
+                    <div class="download-card">
+                        <h4>🖼️ Thumbnail</h4>
+                        <p>Download video thumbnail image</p>
+                        <button class="btn btn-info" onclick="downloadThumbnail()">Download Thumbnail</button>
+                    </div>
+                </div>
+            `;
+            display.classList.remove('hidden');
+        }
+
+        async function downloadVideo() {
+            await performDownload('video', '🎬 Preparing video download...');
+        }
+
+        async function downloadAudio() {
+            await performDownload('audio', '🎵 Preparing audio download...');
+        }
+
+        async function downloadThumbnail() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            if (!videoUrl) {
+                showResult('downloadResult', 'Please enter a video URL', 'error');
+                return;
+            }
+
+            if (currentVideoInfo && currentVideoInfo.thumbnail) {
+                // Direct thumbnail download
+                const link = document.createElement('a');
+                link.href = currentVideoInfo.thumbnail;
+                link.download = `${currentVideoInfo.title || 'thumbnail'}.jpg`;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showResult('downloadResult', '✅ Thumbnail download started! Check your downloads folder.', 'success');
+            } else {
+                showResult('downloadResult', '❌ Please get video info first to download thumbnail', 'error');
+            }
+        }
+
+        async function performDownload(type, loadingMessage) {
+            const videoUrl = document.getElementById('videoUrl').value;
+            if (!videoUrl) {
+                showResult('downloadResult', 'Please enter a video URL', 'error');
+                return;
+            }
+
+            showLoading('downloadResult', loadingMessage);
+            
+            try {
+                const result = await makeRequest('/api/download-links', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        url: videoUrl,
+                        format: type === 'audio' ? 'mp3' : 'mp4'
+                    })
+                });
+                
+                if (result.ok && result.data.success) {
+                    const links = result.data.data.download_links;
+                    if (links && links.length > 0) {
+                        let message = `✅ ${type.charAt(0).toUpperCase() + type.slice(1)} download links generated!\n\n`;
+                        links.forEach((link, index) => {
+                            message += `${index + 1}. Quality: ${link.quality || 'Unknown'}\n`;
+                            message += `   Format: ${link.format || 'Unknown'}\n`;
+                            message += `   Size: ${link.filesize || 'Unknown'}\n`;
+                            message += `   URL: ${link.url}\n\n`;
+                        });
+                        message += 'Right-click on URLs and select "Save link as..." to download.';
+                        showResult('downloadResult', message, 'success');
+                    } else {
+                        showResult('downloadResult', `❌ No ${type} download links available`, 'error');
+                    }
+                } else {
+                    showResult('downloadResult', `❌ Error: ${result.data.error || `Failed to get ${type} download links`}`, 'error');
+                }
+            } catch (error) {
+                showResult('downloadResult', `❌ Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        function switchEnvironment() {
+            const environment = document.getElementById('environment').value;
+            const apiUrlInput = document.getElementById('apiUrl');
+            
+            if (environment === 'production') {
+                apiUrlInput.value = 'https://mainapi-qbiw.onrender.com';
+            } else {
+                apiUrlInput.value = 'http://localhost:10000';
+            }
+            
+            checkServerStatus();
+        }
+
+        function showTroubleshootingInfo() {
+            const troubleshootingHtml = `
+                <div class="troubleshooting">
+                    <h4>🔧 Production Environment Troubleshooting</h4>
+                    <p><strong>Common issues when using yt-dlp on cloud platforms like Render:</strong></p>
+                    <ul>
+                        <li><strong>IP-based restrictions:</strong> YouTube may block requests from cloud server IPs</li>
+                        <li><strong>Rate limiting:</strong> Cloud platforms often face stricter rate limits</li>
+                        <li><strong>Geographic restrictions:</strong> Some videos are not available in server regions</li>
+                        <li><strong>Authentication requirements:</strong> Age-restricted content needs sign-in</li>
+                        <li><strong>Bot detection:</strong> YouTube's anti-bot measures are more aggressive for cloud IPs</li>
+                    </ul>
+                    <p><strong>Solutions to try:</strong></p>
+                    <ul>
+                        <li>Use different, publicly available YouTube videos</li>
+                        <li>Try shorter videos (under 10 minutes)</li>
+                        <li>Avoid age-restricted or region-locked content</li>
+                        <li>Test with popular, widely available videos</li>
+                        <li>Consider using a VPN or proxy service</li>
+                    </ul>
+                    <div class="environment-info">
+                        <strong>💡 Tip:</strong> The same video that works locally might fail in production due to these platform restrictions. This is a common limitation when deploying yt-dlp applications to cloud services.
+                    </div>
+                </div>
+            `;
+            
+            const existingTroubleshooting = document.querySelector('.troubleshooting');
+            if (!existingTroubleshooting) {
+                const resultSection = document.querySelector('.result-section');
+                resultSection.insertAdjacentHTML('beforeend', troubleshootingHtml);
+            }
+        }
+
+        // Check server status on page load
+        window.onload = function() {
+            console.log('YouTube Downloader Test Page loaded');
+            checkServerStatus();
+        };
+    </script>
+</body>
+</html>
